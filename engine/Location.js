@@ -74,21 +74,65 @@ class Location extends Base {
 		 * @type {String}
 		 */
 		this.name = options.name;
+		/**
+		 * The location positioned north of this one
+		 * @type {Location}
+		 */
 		this.north = this.world.locations.resolve(options.north);
+		/**
+		 * The location positioned south of this one
+		 * @type {Location}
+		 */
 		this.south = this.world.locations.resolve(options.south);
+		/**
+		 * The location positioned east of this one
+		 * @type {Location}
+		 */
 		this.east = this.world.locations.resolve(options.east);
+		/**
+		 * The location positioned west of this one
+		 * @type {Location}
+		 */
 		this.west = this.world.locations.resolve(options.west);
 		/**
 		 * The location positioned above this one
 		 * @type {Location}
 		 */
 		this.up = this.world.locations.resolve(options.up);
+		/**
+		 * The location positioned below this one
+		 * @type {Location}
+		 */
 		this.down = this.world.locations.resolve(options.down);
+		/**
+		 * The voice channel being used as button to move between this location and the one north of it
+		 * @type {VoiceChannel}
+		 */
 		this.buttonNorth;
+		/**
+		 * The voice channel being used as button to move between this location and the one south of it
+		 * @type {VoiceChannel}
+		 */
 		this.buttonSouth;
+		/**
+		 * The voice channel being used as button to move between this location and the one east of it
+		 * @type {VoiceChannel}
+		 */
 		this.buttonEast;
+		/**
+		 * The voice channel being used as button to move between this location and the one west of it
+		 * @type {VoiceChannel}
+		 */
 		this.buttonWest;
+		/**
+		 * The voice channel being used as button to move between this location and the one above it
+		 * @type {VoiceChannel}
+		 */
 		this.buttonUp;
+		/**
+		 * The voice channel being used as button to move between this location and the one below it
+		 * @type {VoiceChannel}
+		 */
 		this.buttonDown;
 	}
 	/**
@@ -98,6 +142,11 @@ class Location extends Base {
 		this.world.locations.add(this);
 		if (Utility.defined(this.battle)) this.battle._location = this;
 	}
+	/**
+	 * Creates the role and channels for this location and links the associated locations to the newly created button channels
+	 * @async
+	 * @returns {void} 
+	 */
 	async generate() {
 		if (this.generated) throw new Error("Location must not be generated to be generated");
 		this.role = await this.guild.roles.create({
@@ -115,17 +164,17 @@ class Location extends Base {
 				id: this.guild.roles.everyone,
 				deny: ["SEND_MESSAGES", "VIEW_CHANNEL", "CONNECT"]
 			}]
-		})
+		});
 		this.textChannel = await this.guild.channels.create("text", {
 			type: "text",
 			parent: this.category,
 			position: 1
-		})
+		});
 		this.voiceChannel = await this.guild.channels.create("voice", {
 			type: "voice",
 			parent: this.category,
 			position: 2
-		})
+		});
 		this.spacerChannel = await this.guild.channels.create("──────────────", {
 			type: "voice",
 			parent: this.category,
@@ -138,7 +187,7 @@ class Location extends Base {
 				deny: ["SEND_MESSAGES", "CONNECT", "SPEAK", "VIEW_CHANNEL"]
 			}],
 			position: 3
-		})
+		});
 		for (let mob of this.mobs) {
 			if (mob[1] instanceof Player) {
 				await mob[1].guildMember.roles.add(this.role);
@@ -161,6 +210,11 @@ class Location extends Base {
 		if (Utility.defined(this.down)) await this.attach(this.down, "down");
 		if (Utility.defined(this.up)) await this.attach(this.up, "up");
 	}
+	/**
+	 * Reverses the effects of the `generate()` method
+	 * @async
+	 * @returns {void}
+	 */
 	async ungenerate() {
 		if (!this.generated) throw new Error("Location must be generated to ungenerate");
 		if (Utility.defined(this.buttonDown)) await this.buttonDown.delete();
@@ -191,6 +245,13 @@ class Location extends Base {
 		});
 		await this.emit("actionTaken", action);
 	}
+	/**
+	 * Creates a battle at this location
+	 * @param {String} name - The name of the battle
+	 * @param {Object} options - The options for this battle
+	 * @async
+	 * @returns {Battle}
+	 */
 	async createBattle(name, options) {
 		let battle = new Battle(this.world, {
 			location: this,
@@ -200,6 +261,13 @@ class Location extends Base {
 		battle.init();
 		return battle;
 	}
+	/**
+	 * Creates a player at this location
+	 * @param {String} name - The name of the player
+	 * @param {Object} options - The options for this player
+	 * @async
+	 * @returns {Player}
+	 */
 	async createPlayer(name, options) {
 		let player = new Player(this.world, {
 			location: this,
@@ -212,6 +280,13 @@ class Location extends Base {
 		await player.init();
 		return player;
 	}
+	/**
+	 * Creates a monster at this location
+	 * @async
+	 * @param {String} name - The name of the monster
+	 * @param {Object} options - The options for this monster
+	 * @returns {Monster}
+	 */
 	async createMonster(name, options) {
 		let monster = new Monster(this.world, {
 			location: this,
@@ -223,6 +298,13 @@ class Location extends Base {
 		await monster.init();
 		return monster;
 	}
+	/**
+	 * Creates a item at this location
+	 * @async
+	 * @param {String} name - The name of the item
+	 * @param {Object} options - The options for this item
+	 * @returns {Item}
+	 */
 	async createItem(name, options) {
 		let item = new Item(this.world, {
 			location: this,
@@ -232,6 +314,13 @@ class Location extends Base {
 		item.init();
 		return item;
 	}
+	/**
+	 * Places a location next to this one in a specified direction
+	 * @param {Location} location - The location to place
+	 * @param {String} direction - One of the following directions: "up", "down", "north", "east", "south", or "west"
+	 * @async
+	 * @returns {void}
+	 */
 	async attach(location, direction) {
 		if (!Utility.defined(location) || !Utility.defined(direction)) {
 			throw new Error(`Requires two arguments`);
@@ -260,15 +349,27 @@ class Location extends Base {
 			await Location._bindVCButtonToLocation(this[buttonString], this[direction]);
 		}
 	}
+	/**
+	 * Sends a message to the `textChannel` property channel
+	 * @param {String} message - The message text
+	 * @async
+	 * @returns {Message}
+	 */
 	async message(message) {
 		if (!this.generated) throw new Error(`Location not generated`);
 		if (!Utility.defined(message)) throw new Error(`Requires one argument`);
-		await this.textChannel.send({
+		let actualMessage = await this.textChannel.send({
 			embed: {
 				description: message
 			}
 		});
+		return actualMessage;
 	}
+	/**
+	 * Deletes this location and all references to it
+	 * @async
+	 * @returns {void}
+	 */
 	async delete() {
 		this.mobs.remove();
 		this.items.remove();

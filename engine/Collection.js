@@ -87,6 +87,14 @@ class Collection extends Map {
 		}
 		return true;
 	}
+	async find(condition) {
+		for (let item of this) {
+			let output = await condition(item[1], item[0], this);
+			if (output) {
+				return item;
+			}
+		}
+	}
 }
 
 module.exports = Collection;
