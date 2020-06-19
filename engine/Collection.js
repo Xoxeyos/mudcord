@@ -79,7 +79,7 @@ class Collection extends Map {
 		}
 	}
 	async every(condition) {
-		for (item of this) {
+		for (let item of this) {
 			let output = await condition(item[1], item[0], this);
 			if (!output) {
 				return false;

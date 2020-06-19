@@ -1,12 +1,12 @@
-var Collection = require("./Collection");
-var Discord = require("discord.js");
-var AsyncEventEmitter = require('asynchronous-emitter');
-var Utility = require("./Utility");
-var Location = require("./Location");
-var Mob = require("./Mob");
-var Action = require("./Action");
-var Battle = require("./Battle");
-var Item = require("./Item");
+const Collection = require("./Collection");
+const Discord = require("discord.js");
+const AsyncEventEmitter = require('asynchronous-emitter');
+const Utility = require("./Utility");
+const Location = require("./Location");
+const Mob = require("./Mob");
+const Action = require("./Action");
+const Battle = require("./Battle");
+const Item = require("./Item");
 
 class World extends AsyncEventEmitter {
 	constructor(options) {
@@ -28,7 +28,6 @@ class World extends AsyncEventEmitter {
 	async init() {
 		let Bot = new Discord.Client();
 		Bot.login(this.botToken);
-		debugger;
 		await new Promise((resolve, reject) => {
 			Bot.on("ready", () => {
 				console.log("Connected");
@@ -39,19 +38,17 @@ class World extends AsyncEventEmitter {
 		});
 		this.bot = Bot;
 		this.guild = Bot.guilds.resolve(this.guild);
-		if (this.guild == null) throw new Error ("Guild not found");
+		if (this.guild == undefined || this.guild == null) throw new Error ("Guild not found");
 	}
 	async generateAll() {
 		for (let location of this.locations) {
 			await location[1].generate();
 		};
-		await this.emit("generated");
 	}
 	async ungenerateAll() {
 		for (let location of this.locations) {
 			await location[1].ungenerate();
 		}
-		await this.emit("ungenerated");
 	}
 	async createLocation(name, options) {
 		let location = new Location(this, Utility.defined(options) ? {

@@ -1,4 +1,4 @@
-var Crypto = require('crypto');
+const Crypto = require('crypto');
 
 class Utility {
 	static defined(value) {

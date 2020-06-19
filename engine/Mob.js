@@ -1,47 +1,28 @@
-var Base = require("./Base");
-var Collection = require("./Collection");
-var Utility = require("./Utility");
-var Item = require("./Item");
-var Action = require("./Action");
+const Base = require("./Base");
+const Collection = require("./Collection");
+const Utility = require("./Utility");
+const Item = require("./Item");
+const Action = require("./Action");
 
 class Mob extends Base {
 	constructor(world, options) {
 		super(world);
 		this.name = options.name;
-		this._actions = new Collection(Action);
-		this._items = new Collection(Item);
+		this.actions = new Collection(Action);
+		this.items = new Collection(Item);
 		this.iconURL = options.iconURL;
 		this.description = options.description;
 		this.actionsPerRound = Utility.defined(options.actionsPerRound) ? 1 : options.actionsPerRound;
-		this._actionsTakenThisRound;
-		this._location = this.world.locations.resolve(options.location);
-		this._battle = this.world.battles.resolve(options.battle);
-	}
-	//Controlling object access
-	get guild() {
-		return this.world.guild;
-	}
-	get location() {
-		return this._location;
-	}
-	get battle() {
-		return this._battle;
-	}
-	get actions() {
-		return this._actions;
-	}
-	get items() {
-		return this._items;
-	}
-	get actionsTakenThisRound() {
-		return this._actionsTakenThisRound;
+		this.actionsTakenThisRound;
+		this.location = this.world.locations.resolve(options.location);
+		this.battle = this.world.battles.resolve(options.battle);
 	}
 	//"build" function
 	async init() {
 		this.world.mobs.add(this);
 		if (Utility.defined(this.location)) {
 			let location = this.location;
-			this._location = undefined;
+			this.location = undefined;
 			await this.move(location);
 		}
 		if (Utility.defined(this.battle)) await this.battle.addMob(this);
@@ -79,10 +60,10 @@ class Mob extends Base {
 		if (Utility.defined(currentLocation)) {
 			if (Utility.defined(this.battle)) await this.battle.removeMob(this);
 			currentLocation.mobs.remove(this);
-			this._location = undefined;
+			this.location = undefined;
 			for (let item of this.items) {
 				item[1].location.items.remove(item[1]);
-				item[1]._location = undefined;
+				item[1].location = undefined;
 			}
 			if (currentLocation.generated) {
 				await currentLocation.textChannel.send({
@@ -94,10 +75,10 @@ class Mob extends Base {
 			await currentLocation.emit("mobLeft", this);
 		}
 		newLocation.mobs.add(this);
-		this._location = newLocation;
+		this.location = newLocation;
 		for (let item of this.items) {
 			item[1].location.items.add(item[1]);
-			item[1]._location = newLocation;
+			item[1].location = newLocation;
 		}
 		if (newLocation.generated) {
 			await newLocation.textChannel.send({

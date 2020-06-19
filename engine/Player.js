@@ -1,8 +1,8 @@
-var Base = require("./Base");
-var Utility = require("./Utility");
-var Action = require("./Action");
-var CommandHandler = require("./CommandHandler");
-var Mob = require("./Mob");
+const Base = require("./Base");
+const Utility = require("./Utility");
+const Action = require("./Action");
+const CommandHandler = require("./CommandHandler");
+const Mob = require("./Mob");
 
 class Player extends Mob {
 	constructor(world, options) {
@@ -16,13 +16,8 @@ class Player extends Mob {
 		});
 		if (!Utility.defined(options.guildMember)) throw new Error("No guildMember object specified.");
 		this.guildMember = this.guild.members.resolve(options.guildMember);
-		this._commandHandler
+		this.commandHandler
 	}
-
-	get commandHandler() {
-		return this._commandHandler;
-	}
-
 	async init() {
 		this.on("changedLocation", async (oldLocation, newLocation) => {
 			if (Utility.defined(oldLocation)) {
@@ -36,7 +31,7 @@ class Player extends Mob {
 			}
 		});
 		await super.init();
-		this._commandHandler = new CommandHandler(this.world, {
+		this.commandHandler = new CommandHandler(this.world, {
 			commands: {
 				"a": async (args) => {
 					await this.action(args.join(" "));
@@ -45,6 +40,7 @@ class Player extends Mob {
 			_this: this,
 			condition: message => message.member.id === this.guildMember.id
 		});
+		this.commandHandler.init();
 	}
 }
 

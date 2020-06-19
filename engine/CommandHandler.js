@@ -1,20 +1,14 @@
-var Base = require("./Base");
-var Utility = require("./Utility");
+const Base = require("./Base");
+const Utility = require("./Utility");
 
 class CommandHandler extends Base {
 	constructor(world, options) {
 		super(world)
 		if (!Utility.defined(options.commands)) throw new Error("No commands object specified")
-		this._commands = options.commands;
+		this.commands = options.commands;
 		if (!Utility.defined(options._this)) throw new Error("No _this object specified")
 		this._this = options._this;
 		this._condition = options.condition;
-	}
-	get guild() {
-		return this.world.guild;
-	}
-	get commands() {
-		return this._commands;
 	}
 	init() {
 		this.world.bot.on("message", async (message) => {
@@ -27,7 +21,7 @@ class CommandHandler extends Base {
 		if (typeof commands != "object") throw new Error("Requires one argument that must be an object");
 		for (let prop in commands) {
 			if (typeof commands[prop] != "function") throw new Error("Command value in key value pair must be a function");
-			this._commands[prop] = commands[prop];
+			this.commands[prop] = commands[prop];
 		}
 	}
 	async _evalCommand(message) {

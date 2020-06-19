@@ -4,14 +4,19 @@
   "description": "A Discord-based MUD client",
   "main": "index.js",
   "engines": {
-    "node": "^12.0.0"
+    "node": ">=12.0.0"
   },
   "bugs": {
     "url": "https://github.com/arcturus-prime/mudcord/issues"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arcturus-prime/mudcord.git"
+  },
   "license": "MIT",
   "files": [
     "index.js",
+    "README.md",
     "engine"
   ],
   "author": "arcturus-prime",

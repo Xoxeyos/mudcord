@@ -1,28 +1,13 @@
-var Base = require("./Base");
-var Utility = require("./Utility");
+const Base = require("./Base");
+const Utility = require("./Utility");
 
 class Action extends Base {
 	constructor(world, options) {
 		super(world);
-		this._mob = options.mob;
-		this._location = options.location;
-		this._actionString = options.actionString;
-		this._battle = options.battle;
-	}
-	get guild() {
-		return this.world.guild;
-	}
-	get mob() {
-		return this._mob;
-	}
-	get location() {
-		return this._location;
-	}
-	get battle() {
-		return this._battle;
-	}
-	get actionString() {
-		return this._actionString;
+		this.mob = options.mob;
+		this.location = options.location;
+		this.actionString = options.actionString;
+		this.battle = options.battle;
 	}
 	init() {
 		this.world.actions.add(this);

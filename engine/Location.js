@@ -1,123 +1,111 @@
-var Base = require("./Base");
-var Player = require("./Player");
-var Collection = require("./Collection");
-var Utility = require("./Utility");
-var Mob = require("./Mob");
-var Action = require("./Action");
-var Item = require("./Item");
-var Battle = require("./Battle");
+const Base = require("./Base");
+const Player = require("./Player");
+const Collection = require("./Collection");
+const Utility = require("./Utility");
+const Mob = require("./Mob");
+const Monster = require("./Monster");
+const Action = require("./Action");
+const Item = require("./Item");
+const Battle = require("./Battle");
 
+/**
+ * Represents a location
+ * @extends {Base}
+ */
 class Location extends Base {
+	/**
+	 * @param {World} world
+	 * @param {Object} options
+	 */
 	constructor(world, options) {
 		super(world);
-		this._generated = false;
-		this._mobs = new Collection(Mob);
-		this._actions = new Collection(Action);
-		this._items = new Collection(Item);
-		this._battle;
-		this._role;
-		this._category;
-		this._textChannel;
-		this._voiceChannel;
-		this._spacerChannel;
+		/**
+		 * Indicates whether this location has been generated
+		 * @type {Boolean}
+		 */
+		this.generated = false;
+		/**
+		 * All mobs currently at this location
+		 * @type {Collection<Mob>}
+		 */
+		this.mobs = new Collection(Mob);
+		/**
+		 * All actions taken at this location
+		 * @type {Collection<Action>}
+		 */
+		this.actions = new Collection(Action);
+		/**
+		 * All items currently at this location
+		 * @type {Collection<Item>}
+		 */
+		this.items = new Collection(Item);
+		/**
+		 * The battle currently taking place at this location (if there is one)
+		 * @type {Battle}
+		 */
+		this.battle;
+		/**
+		 * The role associated with this location
+		 * @type {Role}
+		 */
+		this.role;
+		/**
+		 * The category associated with this location
+		 * @type {CategoryChannel}
+		 */
+		this.category;
+		/**
+		 * The text channel associated with this location
+		 * @type {TextChannel}
+		 */
+		this.textChannel;
+		/**
+		 * The voice channel associated with this location
+		 * @type {VoiceChannel}
+		 */
+		this.voiceChannel;
+		/**
+		 * The channel used as a separator between the button channels and the voice/text channels
+		 * @type {TextChannel}
+		 */
+		this.spacerChannel;
+		/**
+		 * The name of the location
+		 * @type {String}
+		 */
 		this.name = options.name;
-		this._north = this.world.locations.resolve(options.north);
-		this._south = this.world.locations.resolve(options.south);
-		this._east = this.world.locations.resolve(options.east);
-		this._west = this.world.locations.resolve(options.west);
-		this._up = this.world.locations.resolve(options.up);
-		this._down = this.world.locations.resolve(options.down);
-		this._buttonNorth;
-		this._buttonSouth;
-		this._buttonEast;
-		this._buttonWest;
-		this._buttonUp;
-		this._buttonDown;
+		this.north = this.world.locations.resolve(options.north);
+		this.south = this.world.locations.resolve(options.south);
+		this.east = this.world.locations.resolve(options.east);
+		this.west = this.world.locations.resolve(options.west);
+		/**
+		 * The location positioned above this one
+		 * @type {Location}
+		 */
+		this.up = this.world.locations.resolve(options.up);
+		this.down = this.world.locations.resolve(options.down);
+		this.buttonNorth;
+		this.buttonSouth;
+		this.buttonEast;
+		this.buttonWest;
+		this.buttonUp;
+		this.buttonDown;
 	}
-	//Controlling object access
-	get guild() {
-		return this.world.guild;
-	}
-	get generated() {
-		return this._generated;
-	}
-	get mobs() {
-		return this._mobs
-	}
-	get actions() {
-		return this._actions;
-	}
-	get items() {
-		return this._items;
-	}
-	get battle() {
-		return this._battle;
-	}
-	get role() {
-		return this._role;
-	}
-	get category() {
-		return this._category;
-	}
-	get textChannel() {
-		return this._textChannel;
-	}
-	get voiceChannel() {
-		return this._voiceChannel;
-	}
-	get spacerChannel() {
-		return this._spacerChannel;
-	}
-	get up() {
-		return this._up;
-	}
-	get down() {
-		return this._down;
-	}
-	get east() {
-		return this._east;
-	}
-	get west() {
-		return this._west;
-	}
-	get south() {
-		return this._south;
-	}
-	get north() {
-		return this._north;
-	}
-	get buttonUp() {
-		return this._buttonUp;
-	}
-	get buttonDown() {
-		return this._buttonDown;
-	}
-	get buttonEast() {
-		return this._buttonEast;
-	}
-	get buttonWest() {
-		return this._buttonWest;
-	}
-	get buttonSouth() {
-		return this._buttonSouth;
-	}
-	get buttonNorth() {
-		return this._buttonNorth;
-	}
-	//"build" function
+	/**
+	 * The builder function. This must be called after construction and before using the instance of this class
+	 */
 	init() {
 		this.world.locations.add(this);
 		if (Utility.defined(this.battle)) this.battle._location = this;
 	}
-	//methods
 	async generate() {
 		if (this.generated) throw new Error("Location must not be generated to be generated");
-		this._role = await this.guild.roles.create({
+		this.role = await this.guild.roles.create({
 			data: {
 				name: this.name
 			}
 		});
-		this._category = await this.guild.channels.create(this.name, {
+		this.category = await this.guild.channels.create(this.name, {
 			type: "category",
 			permissionOverwrites: [{
 				id: this.role,
@@ -128,17 +116,17 @@ class Location extends Base {
 				deny: ["SEND_MESSAGES", "VIEW_CHANNEL", "CONNECT"]
 			}]
 		})
-		this._textChannel = await this.guild.channels.create("text", {
+		this.textChannel = await this.guild.channels.create("text", {
 			type: "text",
 			parent: this.category,
 			position: 1
 		})
-		this._voiceChannel = await this.guild.channels.create("voice", {
+		this.voiceChannel = await this.guild.channels.create("voice", {
 			type: "voice",
 			parent: this.category,
 			position: 2
 		})
-		this._spacerChannel = await this.guild.channels.create("──────────────", {
+		this.spacerChannel = await this.guild.channels.create("──────────────", {
 			type: "voice",
 			parent: this.category,
 			permissionOverwrites: [{
@@ -164,7 +152,7 @@ class Location extends Base {
 				});
 			}
 		}
-		this._generated = true;
+		this.generated = true;
 		await this.emit("generated");
 		if (Utility.defined(this.north)) await this.attach(this.north, "north");
 		if (Utility.defined(this.south)) await this.attach(this.south, "south");
@@ -186,11 +174,11 @@ class Location extends Base {
 		if (Utility.defined(this.spacerChannel)) await this.spacerChannel.delete();
 		await this.category.delete();
 		await this.role.delete();
-		this._generated = false;
+		this.generated = false;
 		await this.emit("ungenerated");
 	}
 	async _registerAction(action) {
-		action._location = this;
+		action.location = this;
 		this.actions.add(action);
 		await this.textChannel.send({
 			embed: {
@@ -230,8 +218,7 @@ class Location extends Base {
 			name: name,
 			description: Utility.defined(options) ? options.description : undefined,
 			iconURL: Utility.defined(options) ? options.iconURL : undefined,
-			actionsPerRound: Utility.defined(options) ? options.actionsPerRound : undefined,
-			playerOwner: Utility.defined(options) ? options.playerOwner : undefined
+			actionsPerRound: Utility.defined(options) ? options.actionsPerRound : undefined
 		});
 		await monster.init();
 		return monster;
@@ -260,17 +247,17 @@ class Location extends Base {
 			default:
 				throw new Error(`Invalid direction ${direction}`);
 		}
-		this[`_${direction}`] = this.world.locations.resolve(location);
-		if (this.generated && Utility.defined(this[`_${direction}`])) {
-			let buttonString = `_button${direction.charAt(0).toUpperCase() + direction.slice(1)}`;
+		this[direction] = this.world.locations.resolve(location);
+		if (this.generated && Utility.defined(this[direction])) {
+			let buttonString = `button${direction.charAt(0).toUpperCase() + direction.slice(1)}`;
 			if (Utility.defined(this[buttonString])) await this[buttonString].delete();
 			if (location === null) return;
-			this[buttonString] = await this.guild.channels.create(this.north.name, {
+			this[buttonString] = await this.guild.channels.create(this[direction].name, {
 				type: "voice",
 				parent: this.category,
 				position: 4
 			});
-			await Location._bindVCButtonToLocation(this[buttonString], this[`_${direction}`]);
+			await Location._bindVCButtonToLocation(this[buttonString], this[direction]);
 		}
 	}
 	async message(message) {
@@ -294,7 +281,7 @@ class Location extends Base {
 		await this.south.attach(null, "north");
 		await this.north.attach(null, "south");
 		this.world.locations.remove(this);
-		this._deleted = true;
+		this.deleted = true;
 	}
 	static async _bindVCButtonToLocation(voiceChannel, location) {
 		if (!Utility.defined(location) || !Utility.defined(voiceChannel)) {
