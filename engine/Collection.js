@@ -1,8 +1,20 @@
+/**
+ * A Map with some extra functions where the ID is used as an identifier
+ * @extends {Map}
+ */
 class Collection extends Map {
+	/**
+	 * @param  {Class} type - The class that this collection is for
+	 */
 	constructor(type) {
 		super();
 		this.type = type;
 	}
+	/**
+	 * Adds objects (or an object) to the collection
+	 * @param {Object|Collection<Object>|Array<Object>} objects 
+	 * @returns {void}
+	 */
 	add(objects) {
 		if (typeof objects == "array") {
 			for (let x = 0; x < objects; x++) {
@@ -20,6 +32,11 @@ class Collection extends Map {
 			}
 		}
 	}
+	/**
+	 * Removes objects (or an object) from the collection
+	 * @param  {undefined|Collection<Object>|Array<ObjectResolvable>|ObjectResolvable} objectResolvables - If this value is undefined, all items are removed from the collection
+	 * @returns {void}
+	 */
 	remove(objectResolvables) {
 		if (typeof objectResolvables == "array") {
 			for (let x = 0; x < objectResolvables; x++) {
@@ -53,6 +70,11 @@ class Collection extends Map {
 			});
 		}
 	}
+	/**
+	 * Resolves ObjectResolvables (or ObjectResolvables) to an object in the collection
+	 * @param {Collection<Object>|Array<ObjectResolvable>|ObjectResolvable} objectResolvables
+	 * @return {Object}
+	 */
 	resolve(objectResolvables) {
 		if (typeof objectResolvables == "array") {
 			let outputArray = [];
@@ -78,6 +100,11 @@ class Collection extends Map {
 			return undefined;
 		}
 	}
+	/**
+	 * Same as Array.every(). Returns true if every item in this collection passes the provided condition.
+	 * @param  {Function} condition - The condition function to test with
+	 * @return {Boolean}
+	 */
 	async every(condition) {
 		for (let item of this) {
 			let output = await condition(item[1], item[0], this);
@@ -87,6 +114,11 @@ class Collection extends Map {
 		}
 		return true;
 	}
+	/**
+	 * Same as Array.find(). Returns the first item in this collection that satisfies the provided condition.
+	 * @param  {Function} condition - The condition function to test with
+	 * @return {Object}
+	 */
 	async find(condition) {
 		for (let item of this) {
 			let output = await condition(item[1], item[0], this);

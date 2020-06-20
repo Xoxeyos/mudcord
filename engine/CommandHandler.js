@@ -33,6 +33,9 @@ class CommandHandler extends Base {
 		 */
 		this._condition = options.condition;
 	}
+	/**
+	 * The builder function. This must be called after construction and before using the instance of this class
+	 */
 	init() {
 		this.world.bot.on("message", async (message) => {
 			if (this._condition.call(this._this, message) && message.content.startsWith(this.world.botPrefix)) {
@@ -40,11 +43,33 @@ class CommandHandler extends Base {
 			}
 		})
 	}
+	/**
+	 * Adds commands to the handler list
+	 * Format for the "commands" option is similar to the one used when creating a CommandHandler
+	 * @param {Object} commands - An object containing the commands to be added.
+	 * @example
+	 * myCommandHandler.add({
+	 * 	"pickup": (message) => {
+	 * 		//some code
+	 * 	}
+	 * });
+	 */
 	add(commands) {
 		if (typeof commands != "object") throw new Error("Requires one argument that must be an object");
 		for (let prop in commands) {
 			if (typeof commands[prop] != "function") throw new Error("Command value in key value pair must be a function");
 			this.commands[prop] = commands[prop];
+		}
+	}
+	/**
+	 * Removes commands from the handler list
+	 * @param {...String} commands - Strings denoting the key of each command
+	 * @example
+	 * myCommandHandler.remove("pickup", "drop", "attack");
+	 */
+	remove(...commands) {
+		for (var i = commands.length - 1; i >= 0; i--) {
+			delete this.commands[commands[i]];
 		}
 	}
 	async _evalCommand(message) {

@@ -167,3 +167,31 @@ class Battle extends Base {
 }
 
 module.exports = Battle;
+
+/**
+ * Emitted when a round has ended
+ * @event Battle#roundEnd
+ */
+
+/**
+ * Emitted when an action is taken
+ * @event Battle#actionTaken
+ * @param {Action} action
+ */
+
+/**
+ * Emitted when a mob joins this battle
+ * @event Battle#mobJoined
+ * @param {Mob} mob
+ */
+
+/**
+ * Emitted when a mob leaves this battle
+ * @event Battle#mobLeft
+ * @param {Mob} mob
+ */
+
+/**
+ * Emitted when this battle starts
+ * @event Battle#started
+ */

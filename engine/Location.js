@@ -213,7 +213,7 @@ class Location extends Base {
 	/**
 	 * Reverses the effects of the `generate()` method
 	 * @async
-	 * @returns {void}
+	 * @returns {Promise}
 	 */
 	async ungenerate() {
 		if (!this.generated) throw new Error("Location must be generated to ungenerate");
@@ -250,7 +250,7 @@ class Location extends Base {
 	 * @param {String} name - The name of the battle
 	 * @param {Object} options - The options for this battle
 	 * @async
-	 * @returns {Battle}
+	 * @returns {Promise<Battle>}
 	 */
 	async createBattle(name, options) {
 		let battle = new Battle(this.world, {
@@ -266,7 +266,7 @@ class Location extends Base {
 	 * @param {String} name - The name of the player
 	 * @param {Object} options - The options for this player
 	 * @async
-	 * @returns {Player}
+	 * @returns {Promise<Player>}
 	 */
 	async createPlayer(name, options) {
 		let player = new Player(this.world, {
@@ -285,7 +285,7 @@ class Location extends Base {
 	 * @async
 	 * @param {String} name - The name of the monster
 	 * @param {Object} options - The options for this monster
-	 * @returns {Monster}
+	 * @returns {Promise<Monster>}
 	 */
 	async createMonster(name, options) {
 		let monster = new Monster(this.world, {
@@ -303,7 +303,7 @@ class Location extends Base {
 	 * @async
 	 * @param {String} name - The name of the item
 	 * @param {Object} options - The options for this item
-	 * @returns {Item}
+	 * @returns {Promise<Item>}
 	 */
 	async createItem(name, options) {
 		let item = new Item(this.world, {
@@ -319,7 +319,7 @@ class Location extends Base {
 	 * @param {Location} location - The location to place
 	 * @param {String} direction - One of the following directions: "up", "down", "north", "east", "south", or "west"
 	 * @async
-	 * @returns {void}
+	 * @returns {Promise}
 	 */
 	async attach(location, direction) {
 		if (!Utility.defined(location) || !Utility.defined(direction)) {
@@ -353,7 +353,7 @@ class Location extends Base {
 	 * Sends a message to the `textChannel` property channel
 	 * @param {String} message - The message text
 	 * @async
-	 * @returns {Message}
+	 * @returns {Promise<Message>}
 	 */
 	async message(message) {
 		if (!this.generated) throw new Error(`Location not generated`);
@@ -368,7 +368,7 @@ class Location extends Base {
 	/**
 	 * Deletes this location and all references to it
 	 * @async
-	 * @returns {void}
+	 * @returns {Promise}
 	 */
 	async delete() {
 		this.mobs.remove();
@@ -407,3 +407,31 @@ class Location extends Base {
 }
 
 module.exports = Location;
+
+/**
+ * Emitted when this location is generated
+ * @event Location#generated
+ */
+
+/**
+ * Emitted when this location is ungenerated
+ * @event Location#ungenerated
+ */
+
+/**
+ * Emitted when an action is taken at this location
+ * @event Location#actionTaken
+ * @param {Action} [action] - The action that was taken
+ */
+
+/**
+ * Emitted when a mob leaves this location
+ * @event Location#mobLeft
+ * @param {Mob} [mob] - The mob that left this location
+ */
+
+/**
+ * Emitted when a mob joins this location
+ * @event Location#mobJoined
+ * @param {Mob} [mob] - The mob that joined this location
+ */

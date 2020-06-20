@@ -1,7 +1,15 @@
 const Mob = require("./Mob");
 const Utility = require("./Utility");
 
+/**
+ * Represents a monster (a non-player-controlled mob)
+ * @extends {Mob}
+ */
 class Monster extends Mob {
+	/**
+	 * @param  {World} world - The world to create this monster in
+	 * @param  {Object} options - The options to create this monster with
+	 */
 	constructor(world, options) {
 		super(world, {
 			location: options.location,
@@ -11,8 +19,12 @@ class Monster extends Mob {
 			iconURL: options.iconURL,
 			actionsPerRound: options.actionsPerRound
 		});
-		this.commandHandler;
 	}
+	/**
+	 * The builder function. This must be called after construction and before using the instance of this class
+	 * @returns {Promise}
+	 * @async
+	 */
 	async init() {
 		await super.init()
 	}
