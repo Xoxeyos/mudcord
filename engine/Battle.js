@@ -52,6 +52,8 @@ function Battle(world, options = {}) {
 	this.world.battles.add(this);
 	if (this.location) this.location.battle = this;
 }
+Battle.prototype = Object.create(Base.prototype);
+
 /**
  * Starts this battle
  * @async

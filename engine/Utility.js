@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const EventEmitter = require('events');
+const _ = require("lodash");
 
 let utility = {};
 /**
@@ -31,6 +32,13 @@ function AsyncEventEmitter() {
 }
 AsyncEventEmitter.prototype = Object.create(EventEmitter.prototype);
 AsyncEventEmitter.prototype.emit = async function (type, ...args) {
+	//This does not belong to me
+	//
+	//It is directly from the "asynchronous-emitter" package on NPM
+	//Link here: https://github.com/thiagof/asynchronous-emitter
+	//
+	//I took the code that was in the form of an ES6 class and converted it to a normal function class
+	//because, well, 'cause JavaScript is dumb.
 	const handler = _.get(this._events, type);
 	if (_.isEmpty(handler) && !_.isFunction(handler)) {
 		return false;

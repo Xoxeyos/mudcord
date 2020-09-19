@@ -78,6 +78,8 @@ function Location(world, options = {}) {
 		await this.generate();
 	})();
 }
+Location.prototype = Object.create(Base.prototype);
+
 /**
  * Creates the role and channels for this location and links the associated locations to the newly created button channels
  * @async
@@ -183,7 +185,7 @@ Location.prototype._registerAction = async function (action) {
  * @param {Object} options - The options for this battle
  * @async
  * @returns {Promise<Battle>}
- */
+ *
 Location.prototype.createBattle = async function (name, options) {
 	let battle = new Battle(this.world, {
 		location: this,
@@ -199,7 +201,7 @@ Location.prototype.createBattle = async function (name, options) {
  * @param {Object} options - The options for this player
  * @async
  * @returns {Promise<Player>}
- */
+ *
 Location.prototype.createPlayer = async function (name, options) {
 	let player = new Player(this.world, {
 		location: this,
@@ -218,7 +220,7 @@ Location.prototype.createPlayer = async function (name, options) {
  * @param {String} name - The name of the monster
  * @param {Object} options - The options for this monster
  * @returns {Promise<Monster>}
- */
+ *
 Location.prototype.createMonster = async function (name, options) {
 	let monster = new Monster(this.world, {
 		location: this,
@@ -229,7 +231,7 @@ Location.prototype.createMonster = async function (name, options) {
 	});
 	await monster.init();
 	return monster;
-}
+}*/
 Location.prototype._addLocationButton = async function (location) {
 	let button = await this.guild.channels.create(location.name, {
 		type: "voice",
@@ -268,7 +270,7 @@ Location.prototype._addLocationButton = async function (location) {
  * @returns {Promise}
  */
 Location.prototype.attach = async function (locationResolvable) {
-	if (!locationResolvable) throw new Error(`Requires a location`);
+	if (!locationResolvable) throw new Error(`Requires a location.`);
 	let location = this.world.locations.resolve(location);
 	this.locations.add(location);
 	if (this.generated) {
@@ -281,9 +283,9 @@ Location.prototype.attach = async function (locationResolvable) {
  * @async
  * @returns {Promise<Message>}
  */
-async message(message) {
-	if (!this.generated) throw new Error(`Location not generated`);
-	if (!Utility.defined(message)) throw new Error(`Requires one argument`);
+Location.prototype.message = async function (message) {
+	if (!this.generated) throw new Error(`Location not generated.`);
+	if (!message) throw new Error(`Requires a string.`);
 	let actualMessage = await this.textChannel.send({
 		embed: {
 			description: message
@@ -296,7 +298,7 @@ async message(message) {
  * @async
  * @returns {Promise}
  */
-async delete () {
+Location.prototype.delete = async function () {
 	this.mobs.remove();
 	this.items.remove();
 	this.actions.remove();
@@ -304,11 +306,7 @@ async delete () {
 	this.world.locations.remove(this);
 	this.deleted = true;
 }
-	static async _bindVCButtonToLocation(voiceChannel, location) {
-	if (!Utility.defined(location) || !Utility.defined(voiceChannel)) {
-		throw new Error(`Requires two arguments`);
-	
-}
+
 
 module.exports = Location;
 

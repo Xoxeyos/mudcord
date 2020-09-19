@@ -7,9 +7,9 @@ const Utility = require("./Utility");
  * @param  {World} world - The world to create this monster in
  * @param  {Object} options - The options to create this monster with
  */
-function Monster(world, options) {
+function Monster(location, options) {
 	return (async () => {
-		await Mob.call(this, world, options);
+		await Mob.call(this, location.world, options);
 		return this;
 	})();
 }

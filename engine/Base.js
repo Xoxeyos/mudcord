@@ -33,5 +33,6 @@ function Base(world) {
 	this.guild = this.world.guild;
 	return this;
 }
+Base.prototype = Object.create(AsyncEventEmitter.prototype);
 
 module.exports = Base;

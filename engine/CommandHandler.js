@@ -1,3 +1,4 @@
+const { GuildChannel } = require("discord.js");
 const Base = require("./Base");
 const Utility = require("./Utility");
 
@@ -23,9 +24,16 @@ function CommandHandler(world, options = {}) {
 	 * @type {Function}
 	 */
 	this._condition = options.condition;
-
+	/**
+	 * An optional argument that limits the handler to a specific channel
+	 * @type {GuildChannel}
+	 */
+	this.channel = options.channel;
 	this.world.bot.on("message", async (message) => {
-		if (this._condition(message) && message.content.startsWith(this.world.botPrefix)) {
+		if (this._condition(message) && message.content.startsWith(this.world.botPrefix) && message.guild == this.guild) {
+			if(this.channel) {
+				if (this.channel != message.channel) return;
+			}
 			await this._evalCommand(message);
 		}
 	});

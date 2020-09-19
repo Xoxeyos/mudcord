@@ -71,10 +71,12 @@ Mob.prototype = Object.create(Base.prototype);
  * @return {Promise<Action>}
  * @async
  */
-Mob.prototype.action = async function (action) {
-	if (!action.string) throw new Error("Missing required option: actionString");
-	action.mob = this;
-	action.location = this.location;
+Mob.prototype.action = async function (actionString) {
+	if (!actionString) throw new Error("Missing required option: actionString");
+	let action = new Action(this.world, actionString, {
+		mob: this,
+		location: this.location
+	});
 	this.actions.add(action);
 	if (this.battle) {
 		if (this.battle.mobs.resolve(this) && this.actionsTakenThisRound == this.actionsPerRound) {

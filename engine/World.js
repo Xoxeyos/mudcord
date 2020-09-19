@@ -7,6 +7,7 @@ const Mob = require("./Mob");
 const Action = require("./Action");
 const Battle = require("./Battle");
 const Item = require("./Item");
+const CommandHandler = require("./CommandHandler");
 
 /**
  * Represents a world and is the main class that all other classes connect to.

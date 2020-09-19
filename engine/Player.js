@@ -27,7 +27,7 @@ function Player(world, options) {
 		this.commandHandler = new CommandHandler(this.world, {
 			commands: {
 				"a": async (args) => {
-					await mob.action(args.join(" "));
+					await this.action(args.join(" "));
 				}
 			},
 			condition: message => message.member.id === mob.guildMember.id
