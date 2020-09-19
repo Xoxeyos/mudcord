@@ -8,22 +8,14 @@ const Mob = require("./Mob");
 /**
  * Represents a player
  * @extends {Mob}
+ * @param  {World} world - The world to create the player in
+ * @param  {Object} options - The options to create the player with
  */
-class Player extends Mob {
-	/**
-	 * @param  {World} world - The world to create the player in
-	 * @param  {Object} options - The options to create the player with
-	 */
-	constructor(world, options) {
-		super(world, {
-			location: options.location,
-			name: options.name,
-			description: options.description,
-			battle: options.battle,
-			iconURL: options.iconURL,
-			actionsPerRound: options.actionsPerRound
-		});
-		if (!Utility.defined(options.guildMember)) throw new Error("No guildMember object specified.");
+function Player(world, options) {
+	return (async () => {
+		if (!options.guildMember) throw new error("No guildMember object specified.");
+
+		await Mob.call(this, world, options);
 		/**
 		 * The GuildMember that this player is attached to
 		 * @type {GuildMember}
@@ -32,37 +24,29 @@ class Player extends Mob {
 		/**
 		 * The commandHandler for this player (The provided condition is that the message author must match this player's guildMember)
 		 */
-		this.commandHandler
-	}
-	/**
-	 * The builder function. This must be called after construction and before using the instance of this class
-	 * @async
-	 * @returns {Promise}
-	 */
-	async init() {
+		this.commandHandler = new CommandHandler(this.world, {
+			commands: {
+				"a": async (args) => {
+					await mob.action(args.join(" "));
+				}
+			},
+			condition: message => message.member.id === mob.guildMember.id
+		});
+
 		this.on("changedLocation", async (oldLocation, newLocation) => {
-			if (Utility.defined(oldLocation)) {
+			if (oldLocation) {
 				if (oldLocation.generated) await this.guildMember.roles.remove(oldLocation.role);
 			}
-			if (Utility.defined(newLocation)) {
+			if (newLocation) {
 				if (newLocation.generated) {
 					await this.guildMember.roles.add(newLocation.role);
 					if (this.guildMember.voice.channel != undefined) await this.guildMember.voice.setChannel(newLocation.voiceChannel);
 				}
 			}
 		});
-		await super.init();
-		this.commandHandler = new CommandHandler(this.world, {
-			commands: {
-				"a": async (args) => {
-					await this.action(args.join(" "));
-				}
-			},
-			_this: this,
-			condition: message => message.member.id === this.guildMember.id
-		});
-		this.commandHandler.init();
-	}
+		return this;
+	})();
 }
+Player.prototype = Object.create(Mob.prototype);
 
 module.exports = Player;

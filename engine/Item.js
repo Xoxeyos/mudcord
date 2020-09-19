@@ -5,14 +5,12 @@ const CommandHandler = require("./CommandHandler");
 /**
  * Represents an item
  * @extends {Base}
+ * @param {World} world - The world to create this item in
+ * @param {Object} options - The options to create this item with
  */
-class Item extends Base {
-	/**
-	 * @param {World} world - The world to create this item in
-	 * @param {Object} options - The options to create this item with
-	 */
-	constructor(world, options) {
-		super(world);
+function Item(world, options = {}) {
+	return (async () => {
+		Base.call(this, world);
 		/**
 		 * The name of this item
 		 * @type {String}
@@ -36,29 +34,23 @@ class Item extends Base {
 		/**
 		 * The CommandHandler for this item
 		 */
-		this.commandHandler;
-	}
-	/**
-	 * The builder function. This must be called after construction and before using the instance of this class
-	 * @async
-	 * @return {void}
-	 */
-	async init() {
+		this.commandHandler = await CommandHandler({ _this: this, condition: (message) => this.mob ? this.mob.guildMember.id : null == message.member.id });
+	
 		this.world.items.add(this);
-		if (Utility.defined(this.mob)) this.mob.items.add(this);
-		if (Utility.defined(this.location)) this.location.items.add(this);
-		this.commandHandler = new CommandHandler({ _this: this, condition: (message) => Utility.defined(this.mob) ? this.mob.guildMember.id : null == message.member.id})
-	}
-	/**
-	 * Deletes this item and all references to it
-	 * @async
-	 * @return {void}
-	 */
-	async delete () {
-		this.mob.items.remove(this);
-		this.location.items.remove(this);
-		this.world.items.remove(this);
-	}
+		if (this.mob) this.mob.items.add(this);
+		if (this.location) this.location.items.add(this);
+		return this;
+	})();
+}
+/**
+ * Deletes this item and all references to it
+ * @async
+ * @return {void}
+ */
+Item.prototype.delete = async function () {
+	this.mob.items.remove(this);
+	this.location.items.remove(this);
+	this.world.items.remove(this);
 }
 
 module.exports = Item;
